@@ -7,7 +7,7 @@ import openai
 
 from experiments.config import OPEN_AI_KEY
 from experiments.helpers.io_helpers import multiline_input
-from experiments.helpers.openai_api_helpers import backoff_completion, count_messages_tokens, merge_completion_stream
+from experiments.helpers.openai_api_helpers import count_messages_tokens
 from experiments.helpers.file_helpers import (
     save_json,
     load_json,
@@ -15,9 +15,9 @@ from experiments.helpers.file_helpers import (
     generate_run_dir,
 )
 from experiments.constants import (
-    MODEL_NAME,
     CHATS_DIR,
 )
+from experiments.helpers.openai_completion_helpers import get_completion, get_valid_temperature
 
 from experiments.helpers.terminal_color_helper import fg, BG_DEFAULT_COLOR, FG_DEFAULT_COLOR
 from experiments.helpers.token_helpers import print_pricing_message
@@ -48,17 +48,6 @@ def parse_args() -> Namespace:
     return parser.parse_args()
 
 
-def get_completion(prompt, initial_messages=None, temperature=1.0):
-    if initial_messages is None:
-        initial_messages = []
-    messages = initial_messages + [{"role": "user", "content": prompt}]
-    completion = backoff_completion(model=MODEL_NAME, messages=messages, stream=True, temperature=temperature)
-    full_completion, full_text = merge_completion_stream(completion)
-
-    messages.append({"role": "assistant", "content": full_text})
-    return full_text, messages
-
-
 SYSTEM_MESSAGE = """
 SYSTEM MESSAGE, YOU ARE AN OPENAI LLM CHATBOT, AND HAVE A MAXIMUM TOKEN CONTEXT OF 8000 TOKENS.
 THE END USER THAT YOU HAVE BEEN CHATTING WITH WANTS TO CONTINUE THE CONVERSATION, AND DOES NOT WANT TO LOSE THE
@@ -76,15 +65,6 @@ THE END USER WILL NOT SEE THIS MESSAGE OR YOUR RESPONSE.
 )
 
 
-def get_valid_temperature(temp) -> float:
-    if isinstance(temp, float):
-        if temp < 0.0 or temp > 2.0:
-            raise ValueError("Temperature must be a float between 0.0 and 2.0")
-        return temp
-    else:
-        raise ValueError("Temperature must be a float between 0.0 and 2.0")
-
-
 def main():
     args = parse_args()
     temperature = get_valid_temperature(args.temperature)
@@ -96,6 +76,8 @@ def main():
     for message in messages:
         if message["role"] == "user":
             print(fg(0, 1, 0) + message["content"] + BG_DEFAULT_COLOR + FG_DEFAULT_COLOR)
+        elif message["role"] == "system":
+            print(fg(0.5, 0.5, 0.9) + "SYSTEM: " + message["content"] + BG_DEFAULT_COLOR + FG_DEFAULT_COLOR)
         else:
             print(fg(0, 1, 1) + message["content"] + BG_DEFAULT_COLOR + FG_DEFAULT_COLOR)
     for idx, message in enumerate(all_messages):

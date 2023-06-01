@@ -3,7 +3,7 @@
 extracts the concept of a top_n item list from the code below. I want it to be based on a given lambda function named "key", and a max_length integer n. The class should be called "TopNList" and should have an "addItem" function that takes in a new item to possibly add to the list, if the item happens to be in the top "n" based on the "key" function. The code I have currently works, but I want to make it generic. I also want an "addItems" and "asSortedList" function. Here is my current code:
 """
 import heapq
-from typing import Any, Callable, Iterable, List, Tuple
+from typing import Callable, Iterable, List, Tuple
 from typing import TypeVar, Generic
 
 T = TypeVar("T")

@@ -3,8 +3,9 @@
 I want to write a class called "DictDict" that subclasses collections.UserDict, uses "self.data", but accepts keys that are themselves dictionaries, and the key might be huge, more than 12KB. I also want the DictDict class to have a function "DictDict.load(file_path:str)" that loads a saved DictDict from a file into a new DictDict object, and also a save(file_path:str) function that saves the self dictdict to the specified file.
 """
 import unittest
-from dictdict import DictDict
 import os
+
+from experiments.gptlib.dictdict.dictdict import DictDict
 
 
 class TestDictDict(unittest.TestCase):

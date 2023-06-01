@@ -15,7 +15,14 @@ FG_COLOR_PREFIX = str(b"\x1b[38;2;", encoding="utf-8")
 FG_DEFAULT_COLOR = str(b"\x1b[39m", encoding="utf-8")
 
 
-def f_to_i(rf, gf, bf):
+def f_to_i(rf: float, gf: float, bf: float) -> tuple:
+    """
+    Convert color values from float to integers, clamped between 0 and 255 inclusive.
+    :param rf: Red component as float
+    :param gf: Green component as float
+    :param bf: Blue component as float
+    :return: Tuple of integers (r, g, b)
+    """
     r, g, b = int(rf * 255), int(gf * 255), int(bf * 255)
     if r < 0 or g < 0 or b < 0:
         r, g, b = 255, 255, 255
@@ -24,21 +31,47 @@ def f_to_i(rf, gf, bf):
     return r, g, b
 
 
-def fg(rf, gf, bf):
+def fg(rf: float, gf: float, bf: float) -> str:
+    """
+    Create a foreground color escape sequence string.
+    :param rf: Red component as float
+    :param gf: Green component as float
+    :param bf: Blue component as float
+    :return: Foreground color escape sequence string
+    """
     r, g, b = f_to_i(rf, gf, bf)
     return FG_COLOR_PREFIX + f"{r};{g};{b}m"
 
 
-def bg(rf, gf, bf):
+def bg(rf: float, gf: float, bf: float) -> str:
+    """
+    Create a background color escape sequence string.
+    :param rf: Red component as float
+    :param gf: Green component as float
+    :param bf: Blue component as float
+    :return: Background color escape sequence string
+    """
     r, g, b = f_to_i(rf, gf, bf)
     return BG_COLOR_PREFIX + f"{r};{g};{b}m"
 
 
-def bias(rf, gf, bf, biasf):
+def bias(rf: float, gf: float, bf: float, biasf: float) -> tuple:
+    """
+    Add a bias to color components.
+    :param rf: Red component as float
+    :param gf: Green component as float
+    :param bf: Blue component as float
+    :param biasf: Bias to be added to color components
+    :return: Tuple of color components with added bias (rf, gf, bf)
+    """
     return rf + biasf, gf + biasf, bf + biasf
 
 
 def main():
+    """
+    Main function of the terminal_color_helper script.
+    Creates a colorful pattern output in the terminal.
+    """
     max_dist_from_mid = math.dist((0.5, 0.5), (0, 0))
     for y in range(HEIGHT + 1):
         for x in range(WIDTH + 1):

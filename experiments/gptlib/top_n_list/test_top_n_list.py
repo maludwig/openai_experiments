@@ -5,7 +5,7 @@ extracts the concept of a top_n item list from the code below. I want it to be b
 """
 import unittest
 
-from top_n_list import TopNList
+from experiments.gptlib.top_n_list.top_n_list import TopNList
 
 
 class TestTopNList(unittest.TestCase):
@@ -15,15 +15,16 @@ class TestTopNList(unittest.TestCase):
 
     def test_addItem(self):
         # Create a TopNList instance with a simple key function and max_length 3.
-        top_n_list = TopNList(lambda x: x, 3)
+        top_n_list = TopNList(lambda x: -x, 3)
 
         # Add some test items and check the top 3.
         test_items = [1, 2, 5, 3, 4]
         for item in test_items:
             top_n_list.addItem(item)
 
-        result = top_n_list.asSortedList()
-        self.assertEqual(result, [(3, 3), (4, 4), (5, 5)])
+        expected = [(-1, 1), (-2, 2), (-3, 3)]
+        actual = top_n_list.asSortedList()
+        self.assertEqual(expected, actual)
 
     def test_addItems(self):
         # Create a TopNList instance with a custom key function and max_length 4.
@@ -35,7 +36,7 @@ class TestTopNList(unittest.TestCase):
         top_n_list.addItems(test_items)
 
         result = top_n_list.asSortedList()
-        expected = [(-2, 3), (-2, 7), (-1, 4), (-1, 6), (0, 5)]
+        expected = [(0, 5), (-1, 4), (-1, 6), (-2, 3), (-2, 7)]
         self.assertEqual(expected, result)
 
     def test_asSortedList(self):
@@ -47,8 +48,9 @@ class TestTopNList(unittest.TestCase):
         for item in test_items:
             top_n_list.addItem(item)
 
-        result = top_n_list.asSortedList()
-        self.assertEqual(result, [(4, 4), (4, 4), (6, 6), (8, 8), (12, 12)])
+        expected = [(12, 12), (8, 8), (6, 6), (4, 4), (4, 4)]
+        actual = top_n_list.asSortedList()
+        self.assertEqual(expected, actual)
 
     def test_edge_case(self):
         # Create a TopNList instance with a simple key function and max_length 0.

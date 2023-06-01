@@ -4,7 +4,7 @@ has a function that takes a markdown document in as a string, and removes any wh
 """
 import unittest
 
-from remove_whitespace import remove_leading_whitespace
+from experiments.gptlib.whitespace_trimmer.remove_whitespace import remove_leading_whitespace
 
 
 class TestRemoveWhitespace(unittest.TestCase):

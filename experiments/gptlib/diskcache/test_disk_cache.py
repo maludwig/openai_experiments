@@ -6,15 +6,16 @@ import os
 import json
 import tempfile
 import shutil
+from os.path import realpath
 from unittest import TestCase
 
-from disk_cache import DiskCache
+from experiments.gptlib.diskcache.disk_cache import DiskCache
 
 
 class TestDiskCache(TestCase):
     def setUp(self):
         # Create a temporary directory for the cache.
-        self.temp_dir = tempfile.mkdtemp()
+        self.temp_dir = realpath(tempfile.mkdtemp())
         self.cache = DiskCache(cache_dir=self.temp_dir)
 
     def tearDown(self):

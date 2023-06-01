@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from time import sleep
 
 import openai
@@ -15,6 +16,16 @@ openai.api_key = OPEN_AI_KEY
 
 
 def backoff_completion(model=MODEL_NAME, messages=None, stream=True, retry_count=5, temperature=1):
+    """
+    Send a completion request to the OpenAI API with exponential backoff for rate limit errors.
+
+    :param model: The name of the model to use for the completion.
+    :param messages: A list of messages to process (optional).
+    :param stream: A boolean, set to True if streaming the responses (default: True).
+    :param retry_count: The number of retries to attempt upon rate limit errors (default: 5).
+    :param temperature: The sampling temperature used by the model (default: 1).
+    :return: The completion object returned by the API.
+    """
     if messages is None:
         messages = []
     try:
@@ -36,6 +47,12 @@ def backoff_completion(model=MODEL_NAME, messages=None, stream=True, retry_count
 
 
 def count_messages_tokens(messages):
+    """
+    Count the number of tokens in a list of messages.
+
+    :param messages: A list of messages.
+    :return: The total number of tokens in the messages.
+    """
     token_count = 0
     for message in messages:
         token_count += count_tokens(message["content"])
@@ -43,6 +60,12 @@ def count_messages_tokens(messages):
 
 
 def merge_completion_stream(completion):
+    """
+    Merge a stream of completion chunks into a list of full completions and a concatenated text.
+
+    :param completion: An iterable stream of completion chunks.
+    :return: A tuple containing a list of full completions and the concatenated text from the chunks.
+    """
     full_completion = []
     full_text_chunks = []
     for chunk in completion:

@@ -45,11 +45,12 @@ from typing import List, Dict
 
 import openai
 
-from experiments.avp_ai.avp_ai_config import OPEN_AI_KEY
 
 import logging
 import asyncio
 from aiohttp import ClientSession
+
+from experiments.config import OPEN_AI_KEY
 
 openai.api_key = OPEN_AI_KEY
 

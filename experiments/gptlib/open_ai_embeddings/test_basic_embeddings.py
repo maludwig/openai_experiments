@@ -39,10 +39,12 @@ Output:
 
 I want the script to be called basic_embeddings.py and it should have a generate_embedding(text: str) -> List[float]: function that takes an input string, and calls the openai.Embedding.create endpoint with that input string.
 """
+import asyncio
 import unittest
 from unittest.mock import patch
 from typing import List
-from basic_embeddings import generate_embedding
+
+from experiments.gptlib.open_ai_embeddings.basic_embeddings import generate_embedding
 
 
 # Mock response for the OpenAI API call
@@ -55,7 +57,7 @@ mock_response = {
 
 
 # Mock function to replace the actual API call
-def mock_create(*args, **kwargs) -> dict:
+async def mock_create(*args, **kwargs) -> dict:
     return mock_response
 
 
@@ -64,11 +66,14 @@ class TestGenerateEmbedding(unittest.TestCase):
     A class that tests the generate_embedding function.
     """
 
-    @patch("basic_embeddings.openai.Embedding.create", side_effect=mock_create)
+    def setUp(self):
+        self.loop = asyncio.get_event_loop()
+
+    @patch("openai.Embedding.acreate", side_effect=mock_create)
     def test_generate_embedding(self, mock_create_function):
         # Call the generate_embedding function with sample text
         text = "Sample input text for testing."
-        embedding = generate_embedding(text)
+        embedding = self.loop.run_until_complete(generate_embedding(text))
 
         # Ensure the output is a list of floats
         self.assertIsInstance(embedding, List)
